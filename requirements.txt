@@ -1,0 +1,9 @@
+loguru
+tqdm
+matplotlib
+opencv_contrib_python
+numpy
+scikit_learn
+PyYAML
+tensorflow==1.15.0
+pyserial

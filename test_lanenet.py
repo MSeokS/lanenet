@@ -159,11 +159,11 @@ class ComputerVision(object):
 class Arduino:
     def __init__(self):
         # 초기 상태 설정
-        self.cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+        self.cap = cv2.VideoCapture("curv.mp4")
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
         self.cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-        self.arduino = serial.Serial(port='COM5', baudrate=9600, timeout=.1)
+        #self.arduino = serial.Serial(port='COM5', baudrate=9600, timeout=.1)
         time.sleep(2.0)
         self.computerVision = ComputerVision()
 
@@ -196,8 +196,8 @@ class Arduino:
                 end = time.time()
                 if end - start < 0.1:
                     time.sleep(0.1 - (end - start))
-                self.arduino.flush()
-                self.arduino.write(f"{angle}\n".encode('utf-8'))
+                #self.arduino.flush()
+                #self.arduino.write(f"{angle}\n".encode('utf-8'))
                 cv2.waitKey(1)
         except serial.SerialException as e:
             print(f"Serial Error : {e}")
@@ -205,7 +205,7 @@ class Arduino:
             print("stop")
         finally:
             time.sleep(1.0)
-            self.arduino.write("999\n".encode('utf-8'))
+            #self.arduino.write("999\n".encode('utf-8'))
     
     def take_picture(self):
         reward = self.computerVision.detect(self.cap)
@@ -265,10 +265,16 @@ def init_lanenet(weights_path):
     postprocessor = lanenet_postprocess.LaneNetPostProcessor(cfg=CFG)
 
     # 세션 구성 설정
+    """
     sess_config = tf.ConfigProto()
     sess_config.gpu_options.per_process_gpu_memory_fraction = CFG.GPU.GPU_MEMORY_FRACTION
     sess_config.gpu_options.allow_growth = CFG.GPU.TF_ALLOW_GROWTH
     sess_config.gpu_options.allocator_type = 'BFC'
+
+    sess = tf.Session(config=sess_config)
+    """
+    sess_config = tf.ConfigProto(device_count={'GPU': 0})  # GPU를 사용하지 않음
+    sess_config.gpu_options.allow_growth = True  # GPU 메모리 사용 설정을 CPU에 맞게 변경
 
     sess = tf.Session(config=sess_config)
 
